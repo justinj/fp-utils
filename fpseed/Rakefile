@@ -1,0 +1,37 @@
+task :default => [:test]
+
+def build
+  sh "mxmlc src/Main.as -compiler.debug=true -static-link-runtime-shared-libraries=true -output bin/Main.swf"
+  $?.exitstatus
+end
+
+def run
+  sh "flashplayerdebugger bin/Main.swf"
+end
+
+def assets
+  sh "./scripts/gen.rb > src/Assets.as"
+  puts "Regenerated assets file"
+end
+
+task :build do
+  build
+end
+
+task :assets do
+  assets
+end
+
+task :run do
+  run
+end
+
+task :test do
+  assets
+  result = build
+  if result == 0
+    run
+  else
+    puts "Build failed, not running"
+  end
+end
